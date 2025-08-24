@@ -8,8 +8,8 @@ import {
   Alert,
   Platform,
   Dimensions,
-  Slider,
 } from 'react-native';
+import Slider from '@react-native-community/slider';
 import Video from 'react-native-video';
 
 const { width, height } = Dimensions.get('window');
