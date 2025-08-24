@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { VideoPlayer } from '../';
 
-const VideoDemoScreen = () => {
+const VideoList = () => {
   const [selectedVideo, setSelectedVideo] = useState('');
 
   const sampleVideos = [
@@ -280,4 +280,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default VideoDemoScreen;
+export default VideoList;
