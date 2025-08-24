@@ -15,6 +15,8 @@ const AppNavigator = () => {
           headerShown: false,
           cardStyle: { backgroundColor: '#000' },
           presentation: 'card',
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
         }}
       >
         <Stack.Screen 
