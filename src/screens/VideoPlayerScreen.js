@@ -9,20 +9,15 @@ import {
   BackHandler,
 } from 'react-native';
 import Video from 'react-native-video';
-import { useNavigation, useRoute } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
-const VideoPlayerScreen = () => {
+const VideoPlayerScreen = ({ videoUrl, videoTitle, onBack }) => {
   const [paused, setPaused] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [fullscreen, setFullscreen] = useState(false);
   const videoRef = useRef(null);
-  const navigation = useNavigation();
-  const route = useRoute();
-  
-  const { videoUrl, videoTitle } = route.params || {};
 
   useEffect(() => {
     // Force landscape orientation when screen mounts
@@ -71,8 +66,8 @@ const VideoPlayerScreen = () => {
   const handleBackPress = () => {
     if (fullscreen) {
       setFullscreen(false);
-    } else {
-      navigation.goBack();
+    } else if (onBack) {
+      onBack();
     }
   };
 
@@ -84,7 +79,7 @@ const VideoPlayerScreen = () => {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>No video URL provided</Text>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backButton} onPress={onBack}>
           <Text style={styles.backButtonText}>Go Back</Text>
         </TouchableOpacity>
       </View>

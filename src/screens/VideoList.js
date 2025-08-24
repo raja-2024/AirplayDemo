@@ -7,11 +7,9 @@ import {
   Text,
   Alert,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
-const VideoList = () => {
+const VideoList = ({ onVideoSelect }) => {
   const [selectedVideo, setSelectedVideo] = useState('');
-  const navigation = useNavigation();
 
   const sampleVideos = [
     {
@@ -94,11 +92,10 @@ const VideoList = () => {
   ];
 
   const handleVideoSelect = (video) => {
-    // Navigate to VideoPlayer screen with video data
-    navigation.navigate('VideoPlayer', {
-      videoUrl: video.url,
-      videoTitle: video.title,
-    });
+    // Use callback to navigate to VideoPlayer screen
+    if (onVideoSelect) {
+      onVideoSelect(video.url, video.title);
+    }
   };
 
   const handleCustomVideo = () => {
@@ -110,11 +107,8 @@ const VideoList = () => {
         {
           text: 'OK',
           onPress: (url) => {
-            if (url && url.trim()) {
-              navigation.navigate('VideoPlayer', {
-                videoUrl: url.trim(),
-                videoTitle: 'Custom Video',
-              });
+            if (url && url.trim() && onVideoSelect) {
+              onVideoSelect(url.trim(), 'Custom Video');
             }
           },
         },
