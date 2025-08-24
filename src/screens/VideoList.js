@@ -8,11 +8,12 @@ import {
   Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { VideoPlayer } from '../';
+import { useNavigation } from '@react-navigation/native';
 
 const VideoList = () => {
   const [selectedVideo, setSelectedVideo] = useState('');
   const safeAreaInsets = useSafeAreaInsets();
+  const navigation = useNavigation();
 
   const sampleVideos = [
     {
@@ -95,7 +96,11 @@ const VideoList = () => {
   ];
 
   const handleVideoSelect = (video) => {
-    setSelectedVideo(video.url);
+    // Navigate to VideoPlayer screen with video data
+    navigation.navigate('VideoPlayer', {
+      videoUrl: video.url,
+      videoTitle: video.title,
+    });
   };
 
   const handleCustomVideo = () => {
@@ -108,7 +113,10 @@ const VideoList = () => {
           text: 'OK',
           onPress: (url) => {
             if (url && url.trim()) {
-              setSelectedVideo(url.trim());
+              navigation.navigate('VideoPlayer', {
+                videoUrl: url.trim(),
+                videoTitle: 'Custom Video',
+              });
             }
           },
         },
@@ -150,23 +158,6 @@ const VideoList = () => {
       <Text style={styles.customVideoButtonText}>+ Add Custom Video URL</Text>
     </TouchableOpacity>
   );
-
-  if (selectedVideo) {
-    return (
-      <View style={styles.videoSection}>
-        <VideoPlayer
-          source={selectedVideo}
-          title="Playing Video"
-        />
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => setSelectedVideo('')}
-        >
-          <Text style={styles.backButtonText}>← Back to Video List</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
   return (
     <FlatList
