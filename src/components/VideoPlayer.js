@@ -1,19 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   StyleSheet,
   Dimensions,
   TouchableOpacity,
   Text,
+  Alert,
+  StatusBar,
 } from 'react-native';
 import Video from 'react-native-video';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const VideoPlayer = ({ source, title = 'Video Player' }) => {
   const [paused, setPaused] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [fullscreen, setFullscreen] = useState(false);
+  const videoRef = useRef(null);
 
   const handleLoad = () => {
     setLoading(false);
@@ -34,12 +38,66 @@ const VideoPlayer = ({ source, title = 'Video Player' }) => {
     togglePlayPause();
   };
 
+  const toggleFullscreen = () => {
+    setFullscreen(!fullscreen);
+  };
+
+  const handleFullscreenChange = (event) => {
+    setFullscreen(event.isFullscreen);
+  };
+
+  const handleEnd = () => {
+    setPaused(true);
+  };
+
+  const handleProgress = (data) => {
+    // Handle progress updates if needed
+  };
+
+  if (fullscreen) {
+    return (
+      <View style={styles.fullscreenContainer}>
+        <StatusBar hidden={true} />
+        <Video
+          ref={videoRef}
+          source={{ uri: source }}
+          style={styles.fullscreenVideo}
+          resizeMode="contain"
+          paused={paused}
+          onLoad={handleLoad}
+          onError={handleError}
+          onEnd={handleEnd}
+          onProgress={handleProgress}
+          onFullscreenPlayerWillPresent={() => setFullscreen(true)}
+          onFullscreenPlayerWillDismiss={() => setFullscreen(false)}
+          onFullscreenPlayerDidPresent={handleFullscreenChange}
+          onFullscreenPlayerDidDismiss={handleFullscreenChange}
+          fullscreen={fullscreen}
+          fullscreenOrientation="landscape"
+          fullscreenAutorotate={true}
+          controls={true}
+          playInBackground={false}
+          playWhenInactive={false}
+          ignoreSilentSwitch="ignore"
+          repeat={false}
+        />
+        <TouchableOpacity
+          style={styles.exitFullscreenButton}
+          onPress={toggleFullscreen}
+        >
+          <Text style={styles.exitFullscreenButtonText}>✕</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
       
       <View style={styles.videoContainer}>
         <Video
+          ref={videoRef}
           source={{ uri: source }}
           style={styles.video}
           resizeMode="contain"
@@ -47,8 +105,13 @@ const VideoPlayer = ({ source, title = 'Video Player' }) => {
           onLoad={handleLoad}
           onError={handleError}
           onPress={handleVideoPress}
+          onEnd={handleEnd}
+          onProgress={handleProgress}
           controls={false}
           repeat={false}
+          playInBackground={false}
+          playWhenInactive={false}
+          ignoreSilentSwitch="ignore"
         />
         
         {loading && (
@@ -85,6 +148,13 @@ const VideoPlayer = ({ source, title = 'Video Player' }) => {
             {paused ? 'Play' : 'Pause'}
           </Text>
         </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={styles.fullscreenButton}
+          onPress={toggleFullscreen}
+        >
+          <Text style={styles.fullscreenButtonText}>⛶</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -95,6 +165,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
     padding: 20,
+  },
+  fullscreenContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 24,
@@ -115,6 +191,10 @@ const styles = StyleSheet.create({
   video: {
     width: '100%',
     height: '100%',
+  },
+  fullscreenVideo: {
+    width: height, // Use height for width in landscape
+    height: width, // Use width for height in landscape
   },
   overlay: {
     position: 'absolute',
@@ -165,6 +245,34 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  fullscreenButton: {
+    backgroundColor: '#FF9500',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  fullscreenButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  exitFullscreenButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  exitFullscreenButtonText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 
