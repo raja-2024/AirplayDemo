@@ -5,28 +5,22 @@ import {
   Dimensions,
   TouchableOpacity,
   Text,
-  Alert,
 } from 'react-native';
 import Video from 'react-native-video';
 
 const { width } = Dimensions.get('window');
 
-interface VideoPlayerProps {
-  source: string;
-  title?: string;
-}
-
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ source, title = 'Video Player' }) => {
+const VideoPlayer = ({ source, title = 'Video Player' }) => {
   const [paused, setPaused] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   const handleLoad = () => {
     setLoading(false);
     setError(null);
   };
 
-  const handleError = (error: any) => {
+  const handleError = (error) => {
     setLoading(false);
     setError('Error loading video');
     console.error('Video error:', error);
