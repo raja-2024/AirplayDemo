@@ -7,7 +7,7 @@ import {
   Text,
   Alert,
 } from 'react-native';
-import VideoPlayer from '../components/VideoPlayer';
+import { VideoPlayer } from '../';
 
 const VideoDemoScreen = () => {
   const [selectedVideo, setSelectedVideo] = useState('');

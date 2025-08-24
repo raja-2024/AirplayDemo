@@ -8,7 +8,7 @@
 import React from 'react';
 import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import VideoDemoScreen from './screens/VideoDemoScreen';
+import { VideoDemoScreen } from './src';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
