@@ -6,12 +6,21 @@ import {
   TouchableOpacity,
   Text,
   Alert,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const VideoList = () => {
   const [selectedVideo, setSelectedVideo] = useState('');
   const navigation = useNavigation();
+
+  // Manual safe area handling
+  const getSafeAreaTop = () => {
+    if (Platform.OS === 'ios') {
+      return 44; // iOS status bar height
+    }
+    return 20; // Android default
+  };
 
   const sampleVideos = [
     {
@@ -140,7 +149,7 @@ const VideoList = () => {
   );
 
   const renderHeader = () => (
-    <View style={[styles.header, { paddingTop: 20 }]}>
+    <View style={[styles.header, { paddingTop: getSafeAreaTop() + 20 }]}>
       <Text style={styles.headerTitle}>React Native Video Demo</Text>
       <Text style={styles.headerSubtitle}>
         {sampleVideos.length} sample videos available

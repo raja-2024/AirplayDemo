@@ -7,6 +7,7 @@ import {
   Text,
   StatusBar,
   BackHandler,
+  Platform,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -23,6 +24,14 @@ const VideoPlayerScreen = () => {
   const route = useRoute();
   
   const { videoUrl, videoTitle } = route.params || {};
+
+  // Manual safe area handling
+  const getSafeAreaTop = () => {
+    if (Platform.OS === 'ios') {
+      return 44; // iOS status bar height
+    }
+    return 20; // Android default
+  };
 
   useEffect(() => {
     // Force landscape orientation when screen mounts
@@ -96,7 +105,7 @@ const VideoPlayerScreen = () => {
       <StatusBar hidden={true} />
       
       {/* Header with back button */}
-      <View style={[styles.header, { paddingTop: 10 }]}>
+      <View style={[styles.header, { paddingTop: getSafeAreaTop() + 10 }]}>
         <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
