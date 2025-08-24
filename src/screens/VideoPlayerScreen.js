@@ -8,7 +8,6 @@ import {
   StatusBar,
   BackHandler,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Video from 'react-native-video';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -22,7 +21,6 @@ const VideoPlayerScreen = () => {
   const videoRef = useRef(null);
   const navigation = useNavigation();
   const route = useRoute();
-  const safeAreaInsets = useSafeAreaInsets();
   
   const { videoUrl, videoTitle } = route.params || {};
 
@@ -98,7 +96,7 @@ const VideoPlayerScreen = () => {
       <StatusBar hidden={true} />
       
       {/* Header with back button */}
-      <View style={[styles.header, { paddingTop: safeAreaInsets.top + 10 }]}>
+      <View style={[styles.header, { paddingTop: 10 }]}>
         <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>

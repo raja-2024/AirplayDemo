@@ -7,12 +7,10 @@ import {
   Text,
   Alert,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
 const VideoList = () => {
   const [selectedVideo, setSelectedVideo] = useState('');
-  const safeAreaInsets = useSafeAreaInsets();
   const navigation = useNavigation();
 
   const sampleVideos = [
@@ -142,7 +140,7 @@ const VideoList = () => {
   );
 
   const renderHeader = () => (
-    <View style={[styles.header, { paddingTop: safeAreaInsets.top + 20 }]}>
+    <View style={[styles.header, { paddingTop: 20 }]}>
       <Text style={styles.headerTitle}>React Native Video Demo</Text>
       <Text style={styles.headerSubtitle}>
         {sampleVideos.length} sample videos available
@@ -200,7 +198,7 @@ const styles = StyleSheet.create({
   videoSection: {
     flex: 1,
     padding: 20,
-    paddingTop: safeAreaInsets.top + 20,
+    paddingTop: 20,
   },
   backButton: {
     backgroundColor: '#007AFF',

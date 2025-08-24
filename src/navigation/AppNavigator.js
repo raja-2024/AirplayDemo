@@ -14,6 +14,7 @@ const AppNavigator = () => {
         screenOptions={{
           headerShown: false,
           cardStyle: { backgroundColor: '#000' },
+          presentation: 'card',
         }}
       >
         <Stack.Screen 
@@ -30,6 +31,8 @@ const AppNavigator = () => {
             title: 'Video Player',
             presentation: 'modal',
             animationTypeForReplace: 'push',
+            gestureEnabled: true,
+            gestureDirection: 'horizontal',
           }}
         />
       </Stack.Navigator>
