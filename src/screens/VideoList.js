@@ -9,7 +9,6 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
-import Slider from '@react-native-community/slider';
 import Video from 'react-native-video';
 
 const { width, height } = Dimensions.get('window');
@@ -22,6 +21,8 @@ const VideoList = () => {
   const [duration, setDuration] = useState(0);
   const [seeking, setSeeking] = useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const videoRef = useRef(null);
 
   // Manual safe area handling
@@ -47,124 +48,67 @@ const VideoList = () => {
     },
     {
       id: '3',
-      title: 'Sintel',
-      duration: '15:01',
-      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+      title: 'For Bigger Blazes',
+      duration: '0:15',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
     },
     {
       id: '4',
+      title: 'For Bigger Escape',
+      duration: '0:15',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscape.mp4',
+    },
+    {
+      id: '5',
+      title: 'For Bigger Fun',
+      duration: '0:15',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+    },
+    {
+      id: '6',
+      title: 'For Bigger Joyrides',
+      duration: '0:15',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+    },
+    {
+      id: '7',
+      title: 'For Bigger Meltdowns',
+      duration: '0:15',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    },
+    {
+      id: '8',
+      title: 'Sintel',
+      duration: '14:48',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+    },
+    {
+      id: '9',
+      title: 'Subaru Outback On Street And Dirt',
+      duration: '0:16',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
+    },
+    {
+      id: '10',
       title: 'Tears of Steel',
       duration: '12:14',
       url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
     },
-    {
-      id: '5',
-      title: 'We Are Going on Bullrun',
-      duration: '0:15',
-      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
-    },
-    {
-      id: '6',
-      title: 'What Car Can You Get For',
-      duration: '0:16',
-      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetFor.mp4',
-    },
-    {
-      id: '7',
-      title: 'Subaru Outback On Street And Dirt',
-      duration: '0:37',
-      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
-    },
-    {
-      id: '8',
-      title: 'Volkswagen GTI Review',
-      duration: '6:36',
-      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4',
-    },
-    {
-      id: '9',
-      title: 'Honda Civic Type R',
-      duration: '0:30',
-      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/HondaCivicTypeR.mp4',
-    },
-    {
-      id: '10',
-      title: 'Chevrolet Impala',
-      duration: '0:30',
-      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ChevroletImpala.mp4',
-    },
   ];
-
-  const handleVideoSelect = (video) => {
-    const index = sampleVideos.findIndex(v => v.id === video.id);
-    setCurrentVideoIndex(index);
-    setSelectedVideo(video);
-    setIsFullscreen(true);
-    setPaused(false);
-    setCurrentTime(0);
-    setDuration(0);
-  };
-
-  const handleVideoClose = () => {
-    setSelectedVideo(null);
-    setIsFullscreen(false);
-    setPaused(false);
-    setCurrentTime(0);
-    setDuration(0);
-  };
-
-  const togglePlayPause = () => {
-    setPaused(!paused);
-  };
-
-  const goToPrevious = () => {
-    if (currentVideoIndex > 0) {
-      const prevVideo = sampleVideos[currentVideoIndex - 1];
-      setCurrentVideoIndex(currentVideoIndex - 1);
-      setSelectedVideo(prevVideo);
-      setPaused(false);
-      setCurrentTime(0);
-      setDuration(0);
-    }
-  };
-
-  const goToNext = () => {
-    if (currentVideoIndex < sampleVideos.length - 1) {
-      const nextVideo = sampleVideos[currentVideoIndex + 1];
-      setCurrentVideoIndex(currentVideoIndex + 1);
-      setSelectedVideo(nextVideo);
-      setPaused(false);
-      setCurrentTime(0);
-      setDuration(0);
-    }
-  };
-
-  const onSeek = (value) => {
-    setSeeking(true);
-    setCurrentTime(value);
-  };
-
-  const onSeekComplete = (value) => {
-    setSeeking(false);
-    if (videoRef.current) {
-      videoRef.current.seek(value);
-    }
-  };
-
-  const onProgress = (data) => {
-    if (!seeking) {
-      setCurrentTime(data.currentTime);
-    }
-  };
-
-  const onLoad = (data) => {
-    setDuration(data.duration);
-  };
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleVideoSelect = (video, index) => {
+    setSelectedVideo(video);
+    setCurrentVideoIndex(index);
+    setCurrentTime(0);
+    setDuration(0);
+    setPaused(false);
+    setIsFullscreen(false);
   };
 
   const handleCustomVideo = () => {
@@ -177,16 +121,18 @@ const VideoList = () => {
           text: 'OK',
           onPress: (url) => {
             if (url && url.trim()) {
-              setSelectedVideo({
+              const customVideo = {
                 id: 'custom',
                 title: 'Custom Video',
                 duration: 'Unknown',
                 url: url.trim(),
-              });
-              setIsFullscreen(true);
-              setPaused(false);
+              };
+              setSelectedVideo(customVideo);
+              setCurrentVideoIndex(-1);
               setCurrentTime(0);
               setDuration(0);
+              setPaused(false);
+              setIsFullscreen(false);
             }
           },
         },
@@ -195,16 +141,71 @@ const VideoList = () => {
     );
   };
 
-  const renderVideoItem = ({ item }) => (
+  const handleLoad = (data) => {
+    setDuration(data.duration);
+    setSeeking(false); // Ensure seeking is false when loading
+  };
+
+  const handleError = (error) => {
+    console.log('Video error:', error);
+    Alert.alert('Error', error.error.errorString);
+    setPaused(true);
+    setCurrentTime(0);
+    setDuration(0);
+  };
+
+  const handleEnd = () => {
+    setPaused(true);
+    setCurrentTime(0);
+  };
+
+  const handleProgress = (data) => {
+    if (!seeking) {
+      setCurrentTime(data.currentTime);
+    }
+  };
+
+  const handleSeek = (event) => {
+    const { locationX } = event.nativeEvent;
+    const seekBarWidth = width - 40; // Account for padding
+    const seekPercentage = locationX / seekBarWidth;
+    const seekTime = seekPercentage * duration;
+    
+    if (videoRef.current) {
+      videoRef.current.seek(seekTime);
+      setCurrentTime(seekTime);
+    }
+  };
+
+  const goToPrevious = () => {
+    if (currentVideoIndex > 0) {
+      const prevIndex = currentVideoIndex - 1;
+      handleVideoSelect(sampleVideos[prevIndex], prevIndex);
+    }
+  };
+
+  const goToNext = () => {
+    if (currentVideoIndex < sampleVideos.length - 1) {
+      const nextIndex = currentVideoIndex + 1;
+      handleVideoSelect(sampleVideos[nextIndex], nextIndex);
+    }
+  };
+
+  const renderVideoItem = ({ item, index }) => (
     <TouchableOpacity
-      style={styles.videoItem}
-      onPress={() => handleVideoSelect(item)}
+      style={[
+        styles.videoItem,
+        selectedVideo?.id === item.id && styles.selectedVideoItem,
+      ]}
+      onPress={() => handleVideoSelect(item, index)}
     >
       <View style={styles.videoInfo}>
-        <Text style={styles.videoTitle}>{item.title}</Text>
+        <Text style={styles.videoTitle} numberOfLines={2}>
+          {item.title}
+        </Text>
         <Text style={styles.videoDuration}>{item.duration}</Text>
       </View>
-      <Text style={styles.playButton}>▶️</Text>
+      <Text style={styles.playIcon}>▶️</Text>
     </TouchableOpacity>
   );
 
@@ -218,104 +219,122 @@ const VideoList = () => {
   );
 
   const renderFooter = () => (
-    <View style={styles.footer}>
-      <TouchableOpacity style={styles.customButton} onPress={handleCustomVideo}>
-        <Text style={styles.customButtonText}>🎬 Add Custom Video</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity style={styles.customVideoButton} onPress={handleCustomVideo}>
+      <Text style={styles.customVideoButtonText}>🎬 Add Custom Video</Text>
+    </TouchableOpacity>
   );
 
-  // If a video is selected and fullscreen, show only the video player
-  if (selectedVideo && isFullscreen) {
+  const renderVideoPlayer = () => {
+    if (!selectedVideo) return null;
+
     return (
-      <View style={styles.fullscreenContainer}>
-        <Video
-          ref={videoRef}
-          source={{ uri: selectedVideo.url }}
-          style={styles.fullscreenVideo}
-          resizeMode="contain"
-          controls={false}
-          paused={paused}
-          fullscreen={true}
-          fullscreenOrientation="landscape"
-          fullscreenAutorotate={true}
-          onEnd={() => handleVideoClose()}
-          onError={() => handleVideoClose()}
-          onProgress={onProgress}
-          onLoad={onLoad}
-        />
-        
-        {/* Custom Controls */}
-        <View style={styles.customControls}>
-          {/* Previous Button */}
-          <TouchableOpacity 
-            style={[styles.controlButton, currentVideoIndex === 0 && styles.disabledButton]} 
-            onPress={goToPrevious}
-            disabled={currentVideoIndex === 0}
-          >
-            <Text style={styles.controlButtonText}>⏮️</Text>
-          </TouchableOpacity>
-
-          {/* Play/Pause Button */}
-          <TouchableOpacity style={styles.controlButton} onPress={togglePlayPause}>
-            <Text style={styles.controlButtonText}>
-              {paused ? '▶️' : '⏸️'}
-            </Text>
-          </TouchableOpacity>
-
-          {/* Next Button */}
-          <TouchableOpacity 
-            style={[styles.controlButton, currentVideoIndex === sampleVideos.length - 1 && styles.disabledButton]} 
-            onPress={goToNext}
-            disabled={currentVideoIndex === sampleVideos.length - 1}
-          >
-            <Text style={styles.controlButtonText}>⏭️</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Seekbar */}
-        <View style={styles.seekbarContainer}>
-          <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
-          <Slider
-            style={styles.seekbar}
-            minimumValue={0}
-            maximumValue={duration || 1}
-            value={currentTime}
-            onValueChange={onSeek}
-            onSlidingComplete={onSeekComplete}
-            minimumTrackTintColor="#FFFFFF"
-            maximumTrackTintColor="#666666"
-            thumbStyle={styles.thumb}
-          />
-          <Text style={styles.timeText}>{formatTime(duration)}</Text>
-        </View>
-
-        {/* Video Info */}
-        <View style={styles.videoInfoOverlay}>
-          <Text style={styles.videoTitleOverlay}>{selectedVideo.title}</Text>
-          <Text style={styles.videoProgress}>
-            {currentVideoIndex + 1} of {sampleVideos.length}
+      <View style={styles.videoPlayerContainer}>
+        <View style={styles.videoInfoHeader}>
+          <Text style={styles.videoPlayerTitle} numberOfLines={1}>
+            {selectedVideo.title}
+          </Text>
+          <Text style={styles.videoCounter}>
+            {currentVideoIndex >= 0 ? `${currentVideoIndex + 1} of ${sampleVideos.length}` : 'Custom Video'}
           </Text>
         </View>
-        
-        <TouchableOpacity style={styles.closeButton} onPress={handleVideoClose}>
-          <Text style={styles.closeButtonText}>✕</Text>
-        </TouchableOpacity>
+
+        <View style={styles.videoContainer}>
+          <Video
+            ref={videoRef}
+            source={{ uri: selectedVideo.url }}
+            style={styles.video}
+            resizeMode="contain"
+            paused={paused}
+            onLoad={handleLoad}
+            onError={handleError}
+            onEnd={handleEnd}
+            onProgress={handleProgress}
+            onFullscreenPlayerWillPresent={() => setIsFullscreen(true)}
+            onFullscreenPlayerWillDismiss={() => setIsFullscreen(false)}
+            fullscreen={isFullscreen}
+            fullscreenOrientation="landscape"
+            fullscreenAutorotate={true}
+            controls={false}
+            playInBackground={false}
+            playWhenInactive={false}
+            ignoreSilentSwitch="ignore"
+            repeat={false}
+          />
+        </View>
+
+        <View style={styles.controlsContainer}>
+          <View style={styles.timeDisplay}>
+            <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
+            <Text style={styles.timeText}>{formatTime(duration)}</Text>
+          </View>
+
+          <TouchableOpacity style={styles.seekBar} onPress={handleSeek}>
+            <View style={styles.seekBarBackground}>
+              <View
+                style={[
+                  styles.seekBarProgress,
+                  { width: `${(currentTime / duration) * 100}%` },
+                ]}
+              />
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.controlButtons}>
+            <TouchableOpacity
+              style={[styles.controlButton, styles.navButton]}
+              onPress={goToPrevious}
+              disabled={currentVideoIndex <= 0}
+            >
+              <Text style={styles.controlButtonText}>⏮️</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.controlButton, styles.playButton]}
+              onPress={() => setPaused(!paused)}
+            >
+              <Text style={styles.controlButtonText}>
+                {paused ? '▶️' : '⏸️'}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.controlButton, styles.navButton]}
+              onPress={goToNext}
+              disabled={currentVideoIndex >= sampleVideos.length - 1}
+            >
+              <Text style={styles.controlButtonText}>⏭️</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     );
-  }
+  };
 
   return (
-    <FlatList
-      style={styles.container}
-      data={sampleVideos}
-      renderItem={renderVideoItem}
-      keyExtractor={(item) => item.id}
-      ListHeaderComponent={renderHeader}
-      ListFooterComponent={renderFooter}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.listContent}
-    />
+    <View style={styles.container}>
+      {selectedVideo ? (
+        <View style={styles.fullscreenContainer}>
+          {renderVideoPlayer()}
+          <TouchableOpacity
+            style={styles.backToListButton}
+            onPress={() => setSelectedVideo(null)}
+          >
+            <Text style={styles.backToListButtonText}>← Back to List</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <FlatList
+          style={styles.container}
+          data={sampleVideos}
+          renderItem={renderVideoItem}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={renderHeader}
+          ListFooterComponent={renderFooter}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+        />
+      )}
+    </View>
   );
 };
 
@@ -359,6 +378,9 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  selectedVideoItem: {
+    backgroundColor: '#e0e0e0', // A subtle highlight for selected item
+  },
   videoInfo: {
     flex: 1,
   },
@@ -372,7 +394,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
-  playButton: {
+  playIcon: {
     fontSize: 24,
   },
   footer: {
@@ -395,16 +417,74 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
   },
-  fullscreenVideo: {
+  videoPlayerContainer: {
     flex: 1,
+    backgroundColor: 'black',
+    paddingTop: 20,
   },
-  customControls: {
+  videoInfoHeader: {
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
+  videoPlayerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 5,
+  },
+  videoCounter: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  videoContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  video: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+  },
+  controlsContainer: {
     position: 'absolute',
-    bottom: 120,
+    bottom: 0,
     left: 0,
     right: 0,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  timeDisplay: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  timeText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  seekBar: {
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#666',
+    marginBottom: 15,
+  },
+  seekBarBackground: {
+    height: '100%',
+    borderRadius: 5,
+    backgroundColor: '#2196F3',
+  },
+  seekBarProgress: {
+    height: '100%',
+    borderRadius: 5,
+    backgroundColor: '#2196F3',
+  },
+  controlButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     alignItems: 'center',
   },
   controlButton: {
@@ -416,75 +496,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 15,
   },
-  disabledButton: {
-    opacity: 0.5,
+  navButton: {
+    // No specific styles needed, just for clarity
+  },
+  playButton: {
+    backgroundColor: '#2196F3',
   },
   controlButtonText: {
     fontSize: 24,
     color: 'white',
   },
-  seekbarContainer: {
+  backToListButton: {
     position: 'absolute',
-    bottom: 80,
-    left: 20,
-    right: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-  },
-  seekbar: {
-    flex: 1,
-    marginHorizontal: 15,
-  },
-  timeText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '600',
-    minWidth: 35,
-    textAlign: 'center',
-  },
-  thumb: {
-    backgroundColor: '#2196F3',
-    width: 20,
-    height: 20,
-  },
-  videoInfoOverlay: {
-    position: 'absolute',
-    top: 50,
+    top: 20,
     left: 20,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 15,
-    paddingHorizontal: 15,
+    borderRadius: 20,
     paddingVertical: 10,
+    paddingHorizontal: 20,
   },
-  videoTitleOverlay: {
+  backToListButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 5,
-  },
-  videoProgress: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 12,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
   },
 });
 

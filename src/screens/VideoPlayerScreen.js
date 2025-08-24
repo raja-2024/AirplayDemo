@@ -105,7 +105,7 @@ const VideoPlayerScreen = () => {
       <StatusBar hidden={true} />
       
       {/* Header with back button */}
-      <View style={[styles.header, { paddingTop: getSafeAreaTop() + 10 }]}>
+      <View style={[styles.header, { paddingTop: 10 }]}>
         <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
