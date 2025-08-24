@@ -7,19 +7,19 @@
 
 import React from 'react';
 import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
-import AppNavigator from './src/navigation/AppNavigator';
+import VideoList from './src/screens/VideoList';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
     <>
-      <StatusBar 
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'} 
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor="#000"
         translucent={false}
       />
-      <AppNavigator />
+      <VideoList />
     </>
   );
 }

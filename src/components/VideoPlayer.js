@@ -75,7 +75,7 @@ const VideoPlayer = ({ source, title = 'Video Player' }) => {
           fullscreen={fullscreen}
           fullscreenOrientation="landscape"
           fullscreenAutorotate={true}
-          controls={true}
+          controls={false}
           playInBackground={false}
           playWhenInactive={false}
           ignoreSilentSwitch="ignore"

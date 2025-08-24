@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,12 +7,22 @@ import {
   Text,
   Alert,
   Platform,
+  Dimensions,
+  Slider,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import Video from 'react-native-video';
+
+const { width, height } = Dimensions.get('window');
 
 const VideoList = () => {
-  const [selectedVideo, setSelectedVideo] = useState('');
-  const navigation = useNavigation();
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [seeking, setSeeking] = useState(false);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const videoRef = useRef(null);
 
   // Manual safe area handling
   const getSafeAreaTop = () => {
@@ -26,88 +36,135 @@ const VideoList = () => {
     {
       id: '1',
       title: 'Big Buck Bunny',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      description: 'Open source animated short film by the Blender Institute',
-      duration: '10:53',
+      duration: '9:56',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     },
     {
       id: '2',
-      title: 'Elephants Dream',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-      description: 'The world\'s first open movie, made entirely with open source software',
-      duration: '10:57',
+      title: 'Elephant Dream',
+      duration: '10:53',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
     },
     {
       id: '3',
-      title: 'For Bigger Blazes',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-      description: 'Sample video for testing video players and streaming',
-      duration: '0:15',
+      title: 'Sintel',
+      duration: '15:01',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
     },
     {
       id: '4',
-      title: 'For Bigger Escape',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscape.mp4',
-      description: 'Another sample video for testing purposes',
-      duration: '0:15',
+      title: 'Tears of Steel',
+      duration: '12:14',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
     },
     {
       id: '5',
-      title: 'For Bigger Fun',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-      description: 'Sample video demonstrating video playback capabilities',
+      title: 'We Are Going on Bullrun',
       duration: '0:15',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
     },
     {
       id: '6',
-      title: 'For Bigger Joyrides',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-      description: 'Sample video for testing video streaming',
-      duration: '0:15',
+      title: 'What Car Can You Get For',
+      duration: '0:16',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetFor.mp4',
     },
     {
       id: '7',
-      title: 'For Bigger Meltdowns',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-      description: 'Sample video demonstrating video player functionality',
-      duration: '0:15',
+      title: 'Subaru Outback On Street And Dirt',
+      duration: '0:37',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
     },
     {
       id: '8',
-      title: 'Sintel',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-      description: 'Open source animated short film by the Blender Foundation',
-      duration: '14:48',
+      title: 'Volkswagen GTI Review',
+      duration: '6:36',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4',
     },
     {
       id: '9',
-      title: 'Tears of Steel',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-      description: 'Open source science fiction film by the Blender Foundation',
-      duration: '12:14',
+      title: 'Honda Civic Type R',
+      duration: '0:30',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/HondaCivicTypeR.mp4',
     },
     {
       id: '10',
-      title: 'We Are Going on Bullrun',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
-      description: 'Sample video for testing video playback',
-      duration: '0:13',
-    },
-    {
-      id: '11',
-      title: 'What Car Can You Get For a Grand?',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4',
-      description: 'Sample video demonstrating video streaming capabilities',
-      duration: '0:13',
+      title: 'Chevrolet Impala',
+      duration: '0:30',
+      url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ChevroletImpala.mp4',
     },
   ];
 
   const handleVideoSelect = (video) => {
-    // Navigate to VideoPlayer screen with video data
-    navigation.navigate('VideoPlayer', {
-      videoUrl: video.url,
-      videoTitle: video.title,
-    });
+    const index = sampleVideos.findIndex(v => v.id === video.id);
+    setCurrentVideoIndex(index);
+    setSelectedVideo(video);
+    setIsFullscreen(true);
+    setPaused(false);
+    setCurrentTime(0);
+    setDuration(0);
+  };
+
+  const handleVideoClose = () => {
+    setSelectedVideo(null);
+    setIsFullscreen(false);
+    setPaused(false);
+    setCurrentTime(0);
+    setDuration(0);
+  };
+
+  const togglePlayPause = () => {
+    setPaused(!paused);
+  };
+
+  const goToPrevious = () => {
+    if (currentVideoIndex > 0) {
+      const prevVideo = sampleVideos[currentVideoIndex - 1];
+      setCurrentVideoIndex(currentVideoIndex - 1);
+      setSelectedVideo(prevVideo);
+      setPaused(false);
+      setCurrentTime(0);
+      setDuration(0);
+    }
+  };
+
+  const goToNext = () => {
+    if (currentVideoIndex < sampleVideos.length - 1) {
+      const nextVideo = sampleVideos[currentVideoIndex + 1];
+      setCurrentVideoIndex(currentVideoIndex + 1);
+      setSelectedVideo(nextVideo);
+      setPaused(false);
+      setCurrentTime(0);
+      setDuration(0);
+    }
+  };
+
+  const onSeek = (value) => {
+    setSeeking(true);
+    setCurrentTime(value);
+  };
+
+  const onSeekComplete = (value) => {
+    setSeeking(false);
+    if (videoRef.current) {
+      videoRef.current.seek(value);
+    }
+  };
+
+  const onProgress = (data) => {
+    if (!seeking) {
+      setCurrentTime(data.currentTime);
+    }
+  };
+
+  const onLoad = (data) => {
+    setDuration(data.duration);
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
   const handleCustomVideo = () => {
@@ -120,10 +177,16 @@ const VideoList = () => {
           text: 'OK',
           onPress: (url) => {
             if (url && url.trim()) {
-              navigation.navigate('VideoPlayer', {
-                videoUrl: url.trim(),
-                videoTitle: 'Custom Video',
+              setSelectedVideo({
+                id: 'custom',
+                title: 'Custom Video',
+                duration: 'Unknown',
+                url: url.trim(),
               });
+              setIsFullscreen(true);
+              setPaused(false);
+              setCurrentTime(0);
+              setDuration(0);
             }
           },
         },
@@ -137,14 +200,11 @@ const VideoList = () => {
       style={styles.videoItem}
       onPress={() => handleVideoSelect(item)}
     >
-      <View style={styles.videoItemHeader}>
+      <View style={styles.videoInfo}>
         <Text style={styles.videoTitle}>{item.title}</Text>
         <Text style={styles.videoDuration}>{item.duration}</Text>
       </View>
-      <Text style={styles.videoDescription}>{item.description}</Text>
-      <Text style={styles.videoUrl} numberOfLines={1} ellipsizeMode="tail">
-        {item.url}
-      </Text>
+      <Text style={styles.playButton}>▶️</Text>
     </TouchableOpacity>
   );
 
@@ -158,13 +218,92 @@ const VideoList = () => {
   );
 
   const renderFooter = () => (
-    <TouchableOpacity
-      style={styles.customVideoButton}
-      onPress={handleCustomVideo}
-    >
-      <Text style={styles.customVideoButtonText}>+ Add Custom Video URL</Text>
-    </TouchableOpacity>
+    <View style={styles.footer}>
+      <TouchableOpacity style={styles.customButton} onPress={handleCustomVideo}>
+        <Text style={styles.customButtonText}>🎬 Add Custom Video</Text>
+      </TouchableOpacity>
+    </View>
   );
+
+  // If a video is selected and fullscreen, show only the video player
+  if (selectedVideo && isFullscreen) {
+    return (
+      <View style={styles.fullscreenContainer}>
+        <Video
+          ref={videoRef}
+          source={{ uri: selectedVideo.url }}
+          style={styles.fullscreenVideo}
+          resizeMode="contain"
+          controls={false}
+          paused={paused}
+          fullscreen={true}
+          fullscreenOrientation="landscape"
+          fullscreenAutorotate={true}
+          onEnd={() => handleVideoClose()}
+          onError={() => handleVideoClose()}
+          onProgress={onProgress}
+          onLoad={onLoad}
+        />
+        
+        {/* Custom Controls */}
+        <View style={styles.customControls}>
+          {/* Previous Button */}
+          <TouchableOpacity 
+            style={[styles.controlButton, currentVideoIndex === 0 && styles.disabledButton]} 
+            onPress={goToPrevious}
+            disabled={currentVideoIndex === 0}
+          >
+            <Text style={styles.controlButtonText}>⏮️</Text>
+          </TouchableOpacity>
+
+          {/* Play/Pause Button */}
+          <TouchableOpacity style={styles.controlButton} onPress={togglePlayPause}>
+            <Text style={styles.controlButtonText}>
+              {paused ? '▶️' : '⏸️'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Next Button */}
+          <TouchableOpacity 
+            style={[styles.controlButton, currentVideoIndex === sampleVideos.length - 1 && styles.disabledButton]} 
+            onPress={goToNext}
+            disabled={currentVideoIndex === sampleVideos.length - 1}
+          >
+            <Text style={styles.controlButtonText}>⏭️</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Seekbar */}
+        <View style={styles.seekbarContainer}>
+          <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
+          <Slider
+            style={styles.seekbar}
+            minimumValue={0}
+            maximumValue={duration || 1}
+            value={currentTime}
+            onValueChange={onSeek}
+            onSlidingComplete={onSeekComplete}
+            minimumTrackTintColor="#FFFFFF"
+            maximumTrackTintColor="#666666"
+            thumbStyle={styles.thumb}
+          />
+          <Text style={styles.timeText}>{formatTime(duration)}</Text>
+        </View>
+
+        {/* Video Info */}
+        <View style={styles.videoInfoOverlay}>
+          <Text style={styles.videoTitleOverlay}>{selectedVideo.title}</Text>
+          <Text style={styles.videoProgress}>
+            {currentVideoIndex + 1} of {sampleVideos.length}
+          </Text>
+        </View>
+        
+        <TouchableOpacity style={styles.closeButton} onPress={handleVideoClose}>
+          <Text style={styles.closeButtonText}>✕</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <FlatList
@@ -189,44 +328,28 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   header: {
+    backgroundColor: '#2196F3',
     paddingHorizontal: 20,
     paddingBottom: 20,
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
+    color: 'white',
     marginBottom: 8,
-    color: '#333',
   },
   headerSubtitle: {
     fontSize: 16,
-    color: '#666',
-  },
-  videoSection: {
-    flex: 1,
-    padding: 20,
-    paddingTop: 20,
-  },
-  backButton: {
-    backgroundColor: '#007AFF',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.8)',
   },
   videoItem: {
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     marginHorizontal: 20,
-    marginBottom: 15,
+    marginVertical: 8,
     padding: 20,
     borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -236,50 +359,132 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  videoItemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+  videoInfo: {
+    flex: 1,
   },
   videoTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: '#333',
-    flex: 1,
+    marginBottom: 4,
   },
   videoDuration: {
     fontSize: 14,
-    color: '#007AFF',
-    fontWeight: '600',
-    backgroundColor: '#f0f8ff',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  videoDescription: {
-    fontSize: 14,
     color: '#666',
-    marginBottom: 8,
-    lineHeight: 20,
   },
-  videoUrl: {
-    fontSize: 12,
-    color: '#999',
-    fontFamily: 'monospace',
+  playButton: {
+    fontSize: 24,
   },
-  customVideoButton: {
-    backgroundColor: '#34C759',
-    marginHorizontal: 20,
-    marginTop: 10,
-    padding: 20,
-    borderRadius: 12,
+  footer: {
+    paddingHorizontal: 20,
+    marginTop: 20,
+  },
+  customButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 25,
     alignItems: 'center',
   },
-  customVideoButtonText: {
-    color: '#fff',
+  customButtonText: {
+    color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  fullscreenContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+  fullscreenVideo: {
+    flex: 1,
+  },
+  customControls: {
+    position: 'absolute',
+    bottom: 120,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  controlButton: {
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 15,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  controlButtonText: {
+    fontSize: 24,
+    color: 'white',
+  },
+  seekbarContainer: {
+    position: 'absolute',
+    bottom: 80,
+    left: 20,
+    right: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 25,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+  seekbar: {
+    flex: 1,
+    marginHorizontal: 15,
+  },
+  timeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+    minWidth: 35,
+    textAlign: 'center',
+  },
+  thumb: {
+    backgroundColor: '#2196F3',
+    width: 20,
+    height: 20,
+  },
+  videoInfoOverlay: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+  videoTitleOverlay: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  videoProgress: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 
